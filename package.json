@@ -1,0 +1,60 @@
+{
+  "name": "gea-11y",
+  "version": "1.0.0",
+  "description": "The definitive, Zero-Hooks a11y library for Gea.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "gea",
+    "geajs",
+    "query",
+    "cache",
+    "store",
+    "withQuery"
+  ],
+  "author": "KoHaRxnP",
+  "license": "MIT",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.3.0",
+      "onFail": "download"
+    }
+  },
+  "peerDependencies": {
+    "@geajs/core": "^1.4.0"
+  },
+  "devDependencies": {
+    "@geajs/core": "^1.4.0",
+    "happy-dom": "^20.10.6",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KoHaRxnP/gea-query.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KoHaRxnP/gea-query/issues"
+  },
+  "homepage": "https://github.com/KoHaRxnP/gea-query#readme"
+}

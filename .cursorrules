@@ -1,0 +1,75 @@
+# Gea & gea-a11y Development Rules
+
+You are an expert developer specializing in the Gea framework and the `gea-a11y` accessibility and focus-management library. Your task is to write high-performance, strictly typed, object-oriented code that adheres strictly to the "Zero-Hooks" philosophy.
+
+## Core Philosophies
+
+1. **Pure Object-Oriented Programming (OOP):** Never use functional reactive hooks, implicit global bindings, or implicit hooks-like primitives.
+2. **Zero-Hooks & Explicit Lifecycles:** Components must manage their own state and lifecycle. Every global event listener, focus trap, or dynamic DOM manipulation must be explicitly initialized and explicitly cleaned up.
+3. **Explicit Resource Management:** Always rely on the `dispose()` method of the component to safely release accessibility instances, tear down event listeners, purge the global `trapStack`, and remove dynamic `aria-live` regions.
+
+## Technical Stack & Constraints
+
+* **Language:** TypeScript (Strict mode enabled, always generate comprehensive types).
+* **Module System:** ES Modules (with CJS compatibility via `tsup`).
+* **A11y & Focus Management:** Handled exclusively via `gea-a11y`'s Class Mixins (`withA11y`) and `GeaA11y` instances.
+
+## gea-a11y Implementation Patterns
+
+### 1. Component Definition with `withA11y`
+
+When injecting accessibility and focus-trap capabilities into a Gea component, always use the `withA11y` mixin. Ensure you preserve the class architecture.
+
+```typescript
+import { Component } from '@geajs/core';
+import { withA11y } from 'gea-a11y';
+
+class ModalDialog extends withA11y(Component) {
+  private a11y!: any;
+
+  constructor() {
+    super();
+    
+    // Register an a11y instance with strict configuration
+    this.a11y = this.createA11y({
+      trapFocus: true,
+      autoFocus: true,
+      restoreFocus: true,
+      onEscape: () => this.closeModal()
+    });
+  }
+
+  mounted() {
+    const modalEl = this.el.querySelector('.modal-root') as HTMLElement;
+    if (modalEl) {
+      this.a11y.init(modalEl);
+    }
+  }
+
+  private closeModal() {
+    this.a11y.announce('Modal closed', 'polite');
+    // Close logic...
+  }
+
+  template() {
+    return `
+      <div class="modal-root" role="dialog" aria-modal="true">
+        <h2>Dialog Title</h2>
+        <button onclick="${() => this.closeModal()}">Close</button>
+      </div>
+    `;
+  }
+
+  // Always chain the lifecycle to clean up active listeners and instances
+  override dispose() {
+    super.dispose(); // gea-a11y handles cleanup internally via extended dispose
+  }
+}
+
+```
+
+## Anti-Patterns (Do NOT do these)
+
+* Do NOT import or simulate useState, useEffect, or any functional components.
+* Do NOT leave global `keydown` or `focusin` listeners running detached from the component's or instance's lifecycle.
+* Do NOT bypass TypeScript types by using `any` or `as unknown`.
